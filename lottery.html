@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<title>Lottery</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link rel="stylesheet" href="http://necolas.github.io/normalize.css/3.0.2/normalize.css">
+<link rel="stylesheet" href="/lib/pure-0.4.2.css">
+<!-- <script src="/lib/jquery-1.10.1.js"></script> -->
+<!-- <script src="https://code.jquery.com/jquery-2.1.1.js"></script> -->
+<style>
+body {
+    overflow: hidden;
+}
+ul, li {
+    margin: 0;
+    padding: 0;
+}
+.clearfix {
+    *zoom: 1;
+}
+.clearfix:after {
+    display: table;
+    content: "";
+    line-height: 0;
+    clear: both;
+}
+.vertical-centering:before {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+ }
+ #loop li {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    border: solid 5px;
+    box-sizing: border-box;
+    text-align: center;
+    /* For Safari 3.1 to 6.0 */
+    -webkit-transition-property: all;
+    -webkit-transition-duration: .1s;
+    -webkit-transition-timing-function: linear;
+    /* Standard syntax */
+    transition-property: all;
+    transition-duration: .1s;
+    transition-timing-function: linear;
+ }
+ .focus {
+    background: red;
+ }
+ #full {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /*margin-left: -25%;*/
+    /*margin-top: -25%;*/
+    text-align: center;
+    font-size: 48px;
+    background: red;
+ }
+ .hide {
+    display: none;
+ }
+ #tab {
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    background: #fff;
+ }
+ #tab a {
+    float: left;
+    width: 50%;
+    height: 30px;
+    text-decoration: none;
+    text-align: center;
+    color: #000;
+    -webkit-transition-property: all;
+    -webkit-transition-duration: .5s;
+    -webkit-transition-timing-function: linear;
+    /* Standard syntax */
+    transition-property: all;
+    transition-duration: .5s;
+    transition-timing-function: linear;
+ }
+ a:focus {
+    outline: none;
+ }
+ #input, #output {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /*width: calc(100vw - 16px);*/
+    /*height: calc(100vh - 16px);*/
+    padding-top: 36px;
+    /*background: #ccc;*/
+ }
+ .active {
+    border-bottom: solid #ccc 4px;
+ }
+ #loop ul {
+    margin: 0 auto;
+ }
+ @media only screen and (min-width: 240px) {
+  #loop ul {
+    width: 240px;
+  }
+}
+@media only screen and (min-width: 480px) {
+  #loop ul {
+    width: 480px;
+  }
+}
+@media only screen and (min-width: 720px) {
+  #loop ul {
+    width: 720px;
+  }
+}
+@media only screen and (min-width: 960px) {
+  #loop ul {
+    width: 960px;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  #loop ul {
+    width: 1200px;
+  }
+}
+</style>
+</head>
+<body>
+    <div id="tab" class="clearfix">
+        <a id="data" class="active vertical-centering" href="">Data</a>
+        <a id="begin" class="vertical-centering" href="">Begin</a>
+    </div>
+    <div id="input">
+        <form class="pure-form pure-form-stacked">
+            <fieldset>
+                <label for="people">People:</label>
+                <textarea name="" id="people" cols="30" rows="5"></textarea>
+                <button class="pure-button pure-button-primary" id="add_people">Add People</button>
+                <!-- <label for="item">Item:</label>
+                <textarea name="" id="item" cols="30" rows="5"></textarea>
+                <button class="pure-button pure-button-primary" id="add_item">Add Item</button> -->
+            </fieldset>
+        </form>
+    </div>
+    <div id="output" class="hide">
+        <button class="pure-button pure-button-primary" id="start">Start</button>
+        <div id="result">
+            <h2>People</h2>
+            <!-- <h2>Items</h2>
+            <div id="list_item"></div> -->
+        </div>
+        <div id="loop">
+            <ul></ul>
+        </div>
+        <div id="full" class="vertical-centering hide"></div>
+    </div>
+</body>
+<script>
+    var peopleArray = [],
+        itemArray = [];
+    document.querySelector('#add_people').addEventListener('click', function (e) {
+        e.preventDefault();
+        var people = document.querySelector('#people').value.replace(/\n/g, '<br>');
+        peopleArray = peopleArray.concat(people.split('<br>'));
+        console.log(peopleArray);
+        var ul = document.createElement('ul');
+        document.querySelector('#loop ul').innerHTML = '';
+        for (var i = 0; i < peopleArray.length; i++) {
+            var li = document.createElement('li');
+            li.setAttribute('class', 'vertical-centering');
+            li.innerHTML = peopleArray[i];
+            ul.appendChild(li);
+        }
+        document.querySelector('#loop ul').appendChild(ul);
+        document.querySelector('#people').value = '';
+    });
+    document.querySelector('#start').addEventListener('click', function (e) {
+        var start = setInterval(function () {
+            for (var i = 0; i < peopleArray.length; i++) {
+                document.querySelectorAll('#loop ul li')[i].classList.remove('focus');
+            }
+            var random = Math.floor((Math.random() * peopleArray.length));
+            document.querySelectorAll('#loop ul li')[random].classList.add('focus');
+        }, 300);
+        setTimeout(function () {
+            clearInterval(start);
+            var val = document.querySelector('.focus').innerHTML;
+            document.querySelector('#full').innerHTML = val + '<audio autoplay><source src="win.mp3" type="audio/mpeg"></audio>';
+            document.querySelector('#full').classList.remove('hide');
+        }, 5000);
+    });
+    document.querySelector('#full').addEventListener('click', function (e) {
+        document.querySelector('#full').classList.add('hide');
+        document.querySelector('#full').innerHTML = '';
+        var removePeople = document.querySelector('.focus').innerHTML;
+        console.log(peopleArray.indexOf(removePeople));
+        peopleArray.splice(peopleArray.indexOf(removePeople), 1);
+        var ul = document.createElement('ul');
+        document.querySelector('#loop ul').innerHTML = '';
+        for (var i = 0; i < peopleArray.length; i++) {
+            var li = document.createElement('li');
+            li.setAttribute('class', 'vertical-centering');
+            li.innerHTML = peopleArray[i];
+            ul.appendChild(li);
+        }
+        document.querySelector('#loop ul').appendChild(ul);
+    });
+    document.querySelector('#data').addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector('#begin').classList.remove('active');
+        document.querySelector('#data').classList.add('active');
+        document.querySelector('#output').classList.add('hide');
+        document.querySelector('#input').classList.remove('hide');
+    });
+    document.querySelector('#begin').addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector('#data').classList.remove('active');
+        document.querySelector('#begin').classList.add('active');
+        document.querySelector('#input').classList.add('hide');
+        document.querySelector('#output').classList.remove('hide');
+    });
+    // document.querySelector('#add_item').addEventListener('click', function () {
+    //     var item = document.querySelector('#item').value.replace(/\n/g, '<br>');
+    //     itemArray = itemArray.concat(item.split('<br>'));
+    //     console.log(itemArray);
+    //     document.querySelector('#list_item').innerHTML = itemArray.join();
+    // });
+</script>
+</html>
